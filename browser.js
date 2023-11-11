@@ -1,16 +1,93 @@
+class guessingGame{
+    #min;
+    #max;
+    #theNumber;
+    #closeRange;    // Close range to the answer
+    #chance = 0;    // Number of tries that player can guess correct number
+    #costOfEachChance;
+    static totalGameScore = 300;
+    #score = 0;
+
+    constructor(min=1,max=20){
+      this.#max = max;
+      this.#min = min;  
+    }
+
+    set min(value){
+        this.#min = value;
+    }
+
+    get min(){
+        return this.#min;
+    }
+
+    set max(value){
+        this.#max = value;
+    }
+
+    get max(){
+        return this.#max;
+    }
+
+    set setChance(value){
+        this.#chance = value;
+    }
+
+    get getChance(){
+        return this.#chance;
+    }
+
+    set setNumber(value){
+        this.#theNumber = value;
+    }
+
+    get getNumber(){
+        return this.#theNumber;
+    }
+
+    set costOfEachChance(value){
+        this.#costOfEachChance = value
+    }
+
+    get costOfEachChance(){
+        return this.#costOfEachChance;
+    }
+    
+    get getCloseRange(){
+        return this.#closeRange;
+    }
+
+    set setCloseRange(value){
+        this.#closeRange = value;
+    }
+
+    get score(){
+        return this.#score;
+    }
+
+    scoring(){
+        this.#score = this.#chance * this.#costOfEachChance;
+    }
+
+    generateRandomNumber(){
+        this.setNumber =  Math.floor(Math.random()*(this.#max-this.#min)+this.#min)
+    }
+
+    decreaseChance(){
+         --this.#chance;
+    }
+
+}
+
+let app;
+
 let min = 1;
-let max = 10;
+let max = 20;
 
-let theNumber;
-let closeRange;
-
-let chance; // Number of tries that player can guess correct number, each chance has 10 score;
-const totalGameScore = 300;
-let score = 0;
+let answersList = new Set();
 
 let lastGameScore;
 let bestGameScore;
-
 
 let guessField =  document.getElementById('guess-field');
 let guessForm = document.getElementById('guess-form');
@@ -24,14 +101,13 @@ let scoreLabel = document.getElementById('score-label');
 let lastScoreLabel = document.getElementById('last-score-label');
 let bestScoreLabel = document.getElementById('best-score-label');
 
-let answersList = new Set();
-
 // Preload stuffs
 document.addEventListener('DOMContentLoaded',function(e){
     // min = prompt('Enter the minimum number to generate random number.',1);
     // max = prompt('Enter the maximum number to generate random number.',10);
     
     let minmax = prompt("Enter min and max number to generate random number.\nSeparate MIN and MAX with \",\" sign.\nexample: 1,20");
+    if(minmax == null) minmax = [min,max].join();
     minmax = minmax.split(',').map(value => parseInt(value));
 
     // min = Math.min(...minmax);
@@ -46,34 +122,31 @@ document.addEventListener('DOMContentLoaded',function(e){
         [min,max] = [max,min];
     }
 
+    app = new guessingGame(min,max);
+
     // Generate Random Number
-    theNumber = generateRandomNumber(min,max);
+    app.generateRandomNumber();
     
     // Defining close range to the answer
-    closeRange = Math.abs(Math.floor(difference(min,max) / 5));
+    // let CloseRange =  Math.abs(Math.floor(difference(app.min,app.max) / 5));
+    app.setCloseRange = app.setChance = Math.abs(Math.floor(difference(app.min,app.max) / 5));
     
-    // Defining number of tries and score
-    chance = Math.abs(Math.floor(difference(min,max) / 5));
-    remainingTriesLabel.innerText = chance;
+    // Defining number of tries and score  
+    remainingTriesLabel.innerText = app.getChance; //chance;
 
     // Preparing Score
-    costOfEachChance = totalGameScore / chance;    
+    app.costOfEachChance = guessingGame.totalGameScore / app.getChance; //chance;    
     scoringSystem();
 
     // Guide Label
-    guideLabel.innerHTML = `You must guess a number between ${min} to ${max} in only ${chance} smart steps.<br><span class="badge badge-info">Tip:</span> <span class="badge badge-light text-info">Your close range is ${chance}.</span>`;
+    guideLabel.innerHTML = `You must guess a number between ${min} to ${max} in only ${app.getChance} smart steps.<br><span class="badge badge-info">Tip:</span> <span class="badge badge-light text-info">Your close range is ${app.getChance}.</span>`;
 
     // Load Prevues game score
     loadScore();
 
-    console.log('Target: ', theNumber);
-    console.log('Close Range: ', closeRange);
+    console.log('Target: ', app.getNumber);
+    console.log('Close Range: ', app.getCloseRange);
 })
-
-
-function generateRandomNumber(min=1,max=10){
-    return Math.floor(Math.random()*(max-min)+min)
-}
 
 function difference(numA,numB){
     return Math.abs(numA-numB);
@@ -85,13 +158,14 @@ function afterEntering(){
 }
 
 function modifyAndCheckRemainingTries(){
-    remainingTriesLabel.innerText = --chance;
+    app.decreaseChance();
+    remainingTriesLabel.innerText = app.getChance;
     scoringSystem();
     return new Promise((resolve,reject)=>{
-        if(chance == 0){
+        if(app.getChance == 0){
             reject(0);
         }else{
-            resolve(chance)
+            resolve(app.getChance)
         }
     })
 }
@@ -118,8 +192,9 @@ function addToAnswerList(answer){
 }
 
 function scoringSystem(){
-    score = chance*costOfEachChance;
-    scoreLabel.innerText = Math.floor(score);
+    // score = app.getChance * app.costOfEachChance;
+    app.scoring();
+    scoreLabel.innerText = Math.floor(app.score);
 }
 
 function loadScore(){
@@ -131,10 +206,10 @@ function loadScore(){
 }
 
 function saveScore(){
-    localStorage.setItem('lastGameScore',score);
-    if (score > bestGameScore) {
+    localStorage.setItem('lastGameScore',app.score);
+    if (app.score > bestGameScore) {
         // localStorage.removeItem('bestGameScore');
-        localStorage.setItem('bestGameScore',score);
+        localStorage.setItem('bestGameScore',app.score);
     }    
 }
 
@@ -156,7 +231,7 @@ guessForm.addEventListener('submit',function(e){
             afterEntering();
         }else{
             // Valid Input
-            if(guessedNumber == theNumber){
+            if(guessedNumber == app.getNumber){
                 //Success Answering
                 answerLabel.innerHTML = `<p class="text-success"><strong>Excellent, ${guessedNumber} is true.</strong></p>`
                 finishGame();
@@ -167,17 +242,17 @@ guessForm.addEventListener('submit',function(e){
                 }else{
                     // Insert in answer list and update the answer label
                     addToAnswerList(guessedNumber);
-        
-                    let differenceNumb = difference(guessedNumber,theNumber);
-        
-                    if(guessedNumber > theNumber){
-                        if((differenceNumb) > closeRange){
+
+                    let differenceNumb = difference(guessedNumber,app.getNumber);
+
+                    if(guessedNumber > app.getNumber){
+                        if((differenceNumb) > app.getCloseRange){
                             answerLabel.innerHTML = `<p class="text-danger"><strong>${guessedNumber}</strong> is too HIIIIIIIIGH. Try again</p>`
                         }else{
                             answerLabel.innerHTML = `<p class="text-primary"><strong>${guessedNumber}</strong> is a little more. Try one more time.</p>`
                         }
                     }else{
-                        if((differenceNumb) > closeRange){
+                        if((differenceNumb) > app.getCloseRange){
                             answerLabel.innerHTML = `<p class="text-danger">${guessedNumber} is too LOOOOOOW. Try again.</p>`
                         }else{
                             answerLabel.innerHTML = `<p class="text-primary">${guessedNumber} is a little low. Try one more time.</p>`
