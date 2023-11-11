@@ -106,7 +106,7 @@ function playAgain(loseMode = false){
     }
 }
 
-function disableGame(){
+function finishGame(){
     guessField.setAttribute("disabled",true);
     guessForm.querySelector(".btn").setAttribute('disabled',true)
 }
@@ -141,6 +141,7 @@ function saveScore(){
 function clearRecords(){
     if(confirm("Are you sure to clear all recent records?")){
         localStorage.clear();
+        loadScore();
         alert('Your previously records are removed.')
     }
 }
@@ -158,7 +159,7 @@ guessForm.addEventListener('submit',function(e){
             if(guessedNumber == theNumber){
                 //Success Answering
                 answerLabel.innerHTML = `<p class="text-success"><strong>Excellent, ${guessedNumber} is true.</strong></p>`
-                disableGame();
+                finishGame();
                 saveScore();
             }else{
                 if(answersList.has(guessedNumber)){
@@ -173,7 +174,6 @@ guessForm.addEventListener('submit',function(e){
                         if((differenceNumb) > closeRange){
                             answerLabel.innerHTML = `<p class="text-danger"><strong>${guessedNumber}</strong> is too HIIIIIIIIGH. Try again</p>`
                         }else{
-                            console.log(`differenceNumb < ${closeRange}`);
                             answerLabel.innerHTML = `<p class="text-primary"><strong>${guessedNumber}</strong> is a little more. Try one more time.</p>`
                         }
                     }else{
@@ -186,11 +186,12 @@ guessForm.addEventListener('submit',function(e){
                     
                     modifyAndCheckRemainingTries()
                     .catch(err=>{
-                        answerLabel.innerHTML = `<p class="text-danger">You Lose!!</p>`
+                        answerLabel.innerHTML = `<p class="text-danger">You Lose!!</p>`;
+                        
                         if(confirm('Sorry, You lose the game.\n Do you want try again?')){
                             playAgain(true);
                         }else{
-                            disableGame();
+                            finishGame();
                         }
                         saveScore();
                     })
