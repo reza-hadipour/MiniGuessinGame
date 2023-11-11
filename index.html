@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Guessing Game</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+    <h1 class="display-4 text-center py-1">Mini Guessing Game</h1>
+    
+    <div class="jumbotron p-3 shadow-sm">
+      <form id="guess-form" >
+        <div class="d-flex align-items-center">
+          <input id="guess-field" name="item" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
+          <button class="btn btn-primary">Is it?</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <p><span class="badge badge-secondary">Guide:</span> <span id="guide-label"></span></p>
+    </div>
+    
+    <div>
+        <h3><strong id="answer-label"></strong></h3>
+    </div>
+
+    <hr>
+    <div>
+      <h3 class="text-success">Your Score: <strong id="score-label"></strong></h3>
+      <h5 class="text-secondary">Last Game Score: <span id="last-score-label"></span></h5>
+      <h5 class="text-secondary">Best Game Score: <span id="best-score-label"></span> <button class="btn btn-sm btn-light text-danger" onclick=clearRecords()>Clear Records</button></h5>
+    </div>
+
+    <div>
+      <h2 class="badge badge-danger"><span>Remaining Times: </span><span id="remaining-times"></span></h2>
+    </div>
+
+    <div>
+      <h4><strong>Your Recent Answers</strong></h4>
+      <span id="answer-list"></span>
+    </div>
+
+    <br>
+    <div class="text-center">
+      <button class="btn btn-lg btn-danger" onclick=playAgain()>Play Again</button>
+    </div>
+    
+  </div>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script defer src="./browser.js" ></script>
+</body>
+</html>
